@@ -21,7 +21,7 @@ public class RandomGenTest {
             this.randomValue = randomValue;
         }
 
-        public float nextFloat() {
+        public float nextFloat(float bound) {
             return randomValue;
         }
     }

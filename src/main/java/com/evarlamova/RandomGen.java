@@ -5,7 +5,7 @@ import java.util.Random;
 public class RandomGen {
 
     public interface PseudoRandomGenerator {
-        float nextFloat();
+        float nextFloat(float bound);
     }
 
     public static class JavaRandomPseudoRandomGenerator
@@ -13,13 +13,15 @@ public class RandomGen {
         private final Random rand = new Random();
 
         @Override
-        public float nextFloat() {
-            return rand.nextFloat();
+        public float nextFloat(float bound) {
+            return rand.nextFloat(bound);
         }
     }
 
     private final int[] randomNums;
     private final float[] probRanges;
+
+    public static final float DELTA = 0.00001f;
 
     private final PseudoRandomGenerator randomGenerator;
 
@@ -38,12 +40,11 @@ public class RandomGen {
             probRanges[i + 1] = sum;
         }
 
-        if (sum != 1) {
+//      I am assuming that float can loose precision,
+//      that's why doing checks like that, introducing small delt
+        if (Math.abs(1f - sum) >= DELTA) {
             throw new IllegalArgumentException("Probability sum should be 1");
         }
-//        if (1f - sum >= 0.00001) {
-//            throw new IllegalArgumentException("Probability sum should be 1");
-//        }
         this.randomNums = randomNums;
         this.probRanges = probRanges;
         this.randomGenerator = randomGenerator;
@@ -56,8 +57,9 @@ public class RandomGen {
      */
     public int nextNum() {
         //Generating evenly distributed float random between 0.0 to 1.0
-        var rand = randomGenerator.nextFloat();
         int l = 0, r = randomNums.length - 1;
+        //We're doing float summing, due to possible loose of precision, upper bound can be lesser by DELTA interval
+        var rand = randomGenerator.nextFloat(probRanges[r]);
         //We use binary search to find range where our random can fit.
         while (l <= r) {
             int m = l + (r - l) / 2;
