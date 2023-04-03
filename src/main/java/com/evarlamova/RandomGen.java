@@ -59,7 +59,7 @@ public class RandomGen {
         //Generating evenly distributed float random between 0.0 to 1.0
         int l = 0, r = randomNums.length - 1;
         //We're doing float summing, due to possible loose of precision, upper bound can be lesser by DELTA interval
-        var rand = randomGenerator.nextFloat(probRanges[r]);
+        var rand = randomGenerator.nextFloat(probRanges[randomNums.length]);
         //We use binary search to find range where our random can fit.
         while (l <= r) {
             int m = l + (r - l) / 2;
